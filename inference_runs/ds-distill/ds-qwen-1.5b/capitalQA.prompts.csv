@@ -1,0 +1,79 @@
+question_id,prompt_id,question,answer,prompt
+0,0,What is the capital of France?,Paris,"<｜begin▁of▁sentence｜><｜User｜>What is the capital of France?<｜Assistant｜><think>
+"
+1,1,What is the capital of Japan?,Tokyo,"<｜begin▁of▁sentence｜><｜User｜>What is the capital of Japan?<｜Assistant｜><think>
+"
+2,2,What is the capital of Canada?,Ottawa,"<｜begin▁of▁sentence｜><｜User｜>What is the capital of Canada?<｜Assistant｜><think>
+"
+3,3,What is the capital of Australia?,Canberra,"<｜begin▁of▁sentence｜><｜User｜>What is the capital of Australia?<｜Assistant｜><think>
+"
+4,4,What is the capital of Brazil?,Brasília,"<｜begin▁of▁sentence｜><｜User｜>What is the capital of Brazil?<｜Assistant｜><think>
+"
+5,5,What is the capital of South Korea?,Seoul,"<｜begin▁of▁sentence｜><｜User｜>What is the capital of South Korea?<｜Assistant｜><think>
+"
+6,6,What is the capital of Egypt?,Cairo,"<｜begin▁of▁sentence｜><｜User｜>What is the capital of Egypt?<｜Assistant｜><think>
+"
+7,7,What is the capital of Italy?,Rome,"<｜begin▁of▁sentence｜><｜User｜>What is the capital of Italy?<｜Assistant｜><think>
+"
+8,8,What is the capital of Argentina?,Buenos Aires,"<｜begin▁of▁sentence｜><｜User｜>What is the capital of Argentina?<｜Assistant｜><think>
+"
+9,9,What is the capital of Thailand?,Bangkok,"<｜begin▁of▁sentence｜><｜User｜>What is the capital of Thailand?<｜Assistant｜><think>
+"
+10,10,What is the capital of New Zealand?,Wellington,"<｜begin▁of▁sentence｜><｜User｜>What is the capital of New Zealand?<｜Assistant｜><think>
+"
+11,11,What is the capital of Morocco?,Rabat,"<｜begin▁of▁sentence｜><｜User｜>What is the capital of Morocco?<｜Assistant｜><think>
+"
+12,12,What is the capital of Norway?,Oslo,"<｜begin▁of▁sentence｜><｜User｜>What is the capital of Norway?<｜Assistant｜><think>
+"
+13,13,What is the capital of Germany?,Berlin,"<｜begin▁of▁sentence｜><｜User｜>What is the capital of Germany?<｜Assistant｜><think>
+"
+14,14,What is the capital of Spain?,Madrid,"<｜begin▁of▁sentence｜><｜User｜>What is the capital of Spain?<｜Assistant｜><think>
+"
+15,15,What is the capital of Portugal?,Lisbon,"<｜begin▁of▁sentence｜><｜User｜>What is the capital of Portugal?<｜Assistant｜><think>
+"
+16,16,What is the capital of the United Kingdom?,London,"<｜begin▁of▁sentence｜><｜User｜>What is the capital of the United Kingdom?<｜Assistant｜><think>
+"
+17,17,What is the capital of Ireland?,Dublin,"<｜begin▁of▁sentence｜><｜User｜>What is the capital of Ireland?<｜Assistant｜><think>
+"
+18,18,What is the capital of the Netherlands?,Amsterdam,"<｜begin▁of▁sentence｜><｜User｜>What is the capital of the Netherlands?<｜Assistant｜><think>
+"
+19,19,What is the capital of Belgium?,Brussels,"<｜begin▁of▁sentence｜><｜User｜>What is the capital of Belgium?<｜Assistant｜><think>
+"
+20,20,What is the capital of Austria?,Vienna,"<｜begin▁of▁sentence｜><｜User｜>What is the capital of Austria?<｜Assistant｜><think>
+"
+21,21,What is the capital of Poland?,Warsaw,"<｜begin▁of▁sentence｜><｜User｜>What is the capital of Poland?<｜Assistant｜><think>
+"
+22,22,What is the capital of Greece?,Athens,"<｜begin▁of▁sentence｜><｜User｜>What is the capital of Greece?<｜Assistant｜><think>
+"
+23,23,What is the capital of China?,Beijing,"<｜begin▁of▁sentence｜><｜User｜>What is the capital of China?<｜Assistant｜><think>
+"
+24,24,What is the capital of India?,New Delhi,"<｜begin▁of▁sentence｜><｜User｜>What is the capital of India?<｜Assistant｜><think>
+"
+25,25,What is the capital of Vietnam?,Hanoi,"<｜begin▁of▁sentence｜><｜User｜>What is the capital of Vietnam?<｜Assistant｜><think>
+"
+26,26,What is the capital of Malaysia?,Kuala Lumpur,"<｜begin▁of▁sentence｜><｜User｜>What is the capital of Malaysia?<｜Assistant｜><think>
+"
+27,27,What is the capital of the Philippines?,Manila,"<｜begin▁of▁sentence｜><｜User｜>What is the capital of the Philippines?<｜Assistant｜><think>
+"
+28,28,What is the capital of Pakistan?,Islamabad,"<｜begin▁of▁sentence｜><｜User｜>What is the capital of Pakistan?<｜Assistant｜><think>
+"
+29,29,What is the capital of Bangladesh?,Dhaka,"<｜begin▁of▁sentence｜><｜User｜>What is the capital of Bangladesh?<｜Assistant｜><think>
+"
+30,30,What is the capital of Saudi Arabia?,Riyadh,"<｜begin▁of▁sentence｜><｜User｜>What is the capital of Saudi Arabia?<｜Assistant｜><think>
+"
+31,31,What is the capital of the United Arab Emirates?,Abu Dhabi,"<｜begin▁of▁sentence｜><｜User｜>What is the capital of the United Arab Emirates?<｜Assistant｜><think>
+"
+32,32,What is the capital of Nigeria?,Abuja,"<｜begin▁of▁sentence｜><｜User｜>What is the capital of Nigeria?<｜Assistant｜><think>
+"
+33,33,What is the capital of Kenya?,Nairobi,"<｜begin▁of▁sentence｜><｜User｜>What is the capital of Kenya?<｜Assistant｜><think>
+"
+34,34,What is the capital of Ethiopia?,Addis Ababa,"<｜begin▁of▁sentence｜><｜User｜>What is the capital of Ethiopia?<｜Assistant｜><think>
+"
+35,35,What is the capital of Tanzania?,Dodoma,"<｜begin▁of▁sentence｜><｜User｜>What is the capital of Tanzania?<｜Assistant｜><think>
+"
+36,36,What is the capital of Mexico?,Mexico City,"<｜begin▁of▁sentence｜><｜User｜>What is the capital of Mexico?<｜Assistant｜><think>
+"
+37,37,What is the capital of Chile?,Santiago,"<｜begin▁of▁sentence｜><｜User｜>What is the capital of Chile?<｜Assistant｜><think>
+"
+38,38,What is the capital of Peru?,Lima,"<｜begin▁of▁sentence｜><｜User｜>What is the capital of Peru?<｜Assistant｜><think>
+"
