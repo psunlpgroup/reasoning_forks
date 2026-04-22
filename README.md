@@ -19,11 +19,18 @@ This repository includes all code for data generation, training pipelines, and e
 
 ## 🔍 Overview
 
-In this paper, we investigate the open research question: **Why Do Reasoning Models Lose Coverage?**, with a new data-centric lens, and show **how “forks in the road”** situations in the post-training data **can shape—and shrink—model coverage**. 
+**Why Do Reasoning Models Lose Coverage?**, 
 
-To test this, we designed controlled environments that isolate and expose decision-points structures via (a) graph branching, and (b) reasoning mode selection. 
+In this paper, we revisit this open question with a data-centric lens, and show **how “forks in the road”** situations in the post-training data **can shape—and shrink—model coverage**. 
 
-Building on our data-inspired findings, we also introduce two simple **shrinkage mitigation** strategies via diversity-aware data synthesis and decoding mechanisms. 
+To test this, we design controlled environments that isolate and expose decision-points structures via (a) graph branching, and (b) reasoning mode selection. Our findings show that sharpening isn’t just about post-training algorithms it’s also deeply shaped by data and its design. We learned that:
+
+- Decision points / “forks in the road” in data matter
+- The structure of data diversity shapes behavior
+- First tokens act as hidden control knobs for coverage
+
+We also observed that coverage is usually not lost with post-training, but just suppressed. 
+With better data design + data-inspired decoding strategies, it can be recovered to a good extent
 
 <!-- 
 1. We present a systematic, data-centric study of coverage shrinkage in reasoning post-trained models, aiming to understand its underlying factors.
