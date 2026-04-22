@@ -1,4 +1,6 @@
-# Why Do Reasoning Models Lose Coverage? The Role of Data and Forks in the Road
+# Why Do Reasoning Models Lose Coverage? 
+
+# The Role of Data and Forks in the Road
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
