@@ -23,6 +23,8 @@ This study is mainly aimed to deepen our understanding of coverage shrinkage in 
 3. Through controlled experiments and training-dynamics analysis, we find a strong correlation between the structure of decision points in data and the severity of coverage shrinkage, providing empirical evidence for the role of data on such behavior.
 4. Motivated by our findings, we introduce two simple diversity-aware data synthesis and decoding strategies, and present proof-of-concept results demonstrating their effectiveness in mitigating shrinkage. These results suggest that the lost coverage is not permanently forgotten, but instead suppressed, and can be recovered through inference-time intervention.
 
+![viz](./images/reasoning_forks.png)
+
 ## ⚙️ Installation
 
 We recommend using [`uv`](https://github.com/astral-sh/uv) for lightning-fast Python environment management and dependency installation.
