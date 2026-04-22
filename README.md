@@ -29,9 +29,6 @@ To test this, we design controlled environments that isolate and expose decision
 - The structure of data diversity shapes behavior
 - First tokens act as hidden control knobs for coverage
 
-We also observed that coverage is usually not lost with post-training, but just suppressed. 
-With better data design + data-inspired decoding strategies, it can be recovered to a good extent
-
 <!-- 
 1. We present a systematic, data-centric study of coverage shrinkage in reasoning post-trained models, aiming to understand its underlying factors.
 2. We identify **forks-in-the-road patterns** in fine-tuning data as a key driver of coverage shrinkage, and analyze this effect through targeted case studies such as graph branching and alternative mathematical reasoning strategies.
