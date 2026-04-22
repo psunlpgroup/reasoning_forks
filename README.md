@@ -1,27 +1,36 @@
 # Why Do Reasoning Models Lose Coverage? The Role of Data and Forks in the Road
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Paper](https://img.shields.io/badge/arXiv-2404.18400-b31b1b.svg)](x)
+[![Data](https://img.shields.io/github/directory-file-count/NNHieu/reasoning_forks/datasets?label=Data%20Files&style=flat-square)](./datasets/)
+![GitHub Repo stars](https://img.shields.io/github/stars/NNHieu/reasoning_forks?style=social)
 
-This repository contains the data generation scripts, training pipelines, and evaluation code for the paper [**Why Do Reasoning Models Lose Coverage? The Role of Data and Forks in the Road**]. 
 
-We investigate the phenomenon of coverage shrinkage in reasoning-focused Large Language Models (LLMs). We demonstrate that this collapse is driven by indecipherable "decision points" (or forks in the road) in fine-tuning data, and we propose practical mitigations through data diversity design and first-token manipulation.
+Official Implementation of paper [**Why Do Reasoning Models Lose Coverage? The Role of Data and Forks in the Road**](x).
+This repository includes all code for data generation, training pipelines, and evaluation.
 
-## 📌 Table of Contents
+<!-- ## 📌 Table of Contents
 - [Overview](#overview)
 - [Installation](#installation)
 - [Data Preparation](#data-preparation)
 - [Training](#training)
 - [Inference & Evaluation](#inference--evaluation)
-- [Citation](#citation)
+- [Citation](#citation) -->
 
 ## 🔍 Overview
 
-This study is mainly aimed to deepen our understanding of coverage shrinkage in reasoning models and provides a data-centric perspective on this phenomenon.
+In this paper, we investigate the open research question: **Why Do Reasoning Models Lose Coverage?**, with a new data-centric lens, and show **how “forks in the road”** situations in the post-training data **can shape—and shrink—model coverage**. 
 
+To test this, we designed controlled environments that isolate and expose decision-points structures via (a) graph branching, and (b) reasoning mode selection. 
+
+Building on our data-inspired findings, we also introduce two simple **shrinkage mitigation** strategies via diversity-aware data synthesis and decoding mechanisms. 
+
+<!-- 
 1. We present a systematic, data-centric study of coverage shrinkage in reasoning post-trained models, aiming to understand its underlying factors.
 2. We identify **forks-in-the-road patterns** in fine-tuning data as a key driver of coverage shrinkage, and analyze this effect through targeted case studies such as graph branching and alternative mathematical reasoning strategies.
 3. Through controlled experiments and training-dynamics analysis, we find a strong correlation between the structure of decision points in data and the severity of coverage shrinkage, providing empirical evidence for the role of data on such behavior.
-4. Motivated by our findings, we introduce two simple diversity-aware data synthesis and decoding strategies, and present proof-of-concept results demonstrating their effectiveness in mitigating shrinkage. These results suggest that the lost coverage is not permanently forgotten, but instead suppressed, and can be recovered through inference-time intervention.
+4. Motivated by our findings, we introduce two simple diversity-aware data synthesis and decoding strategies, and present proof-of-concept results demonstrating their effectiveness in mitigating shrinkage. These results suggest that the lost coverage is not permanently forgotten, but instead suppressed, and can be recovered through inference-time intervention. -->
+
 
 ![viz](./images/reasoning_forks.png)
 
@@ -44,10 +53,10 @@ uv pip install -r requirements.txt
 ```
 
 
-## 📊 Data Preparation
-We provide scripts to recreate both the synthetic and mathematical reasoning datasets.
+## Datasets
+Below are the scripts used for data generation in each task: 
 
-### Synthetic Graph Navigation
+### Graph Branching
 Generate the 6,400 SFT training samples, 1600 RLVR training samples, and 1,000 test samples in the Alpaca instruction format.
 
 ```Bash
@@ -55,7 +64,7 @@ python src/data_generation/gen_math_graph.py
 ```
 
 ### Mathematical Reasoning Modes
-Process the OpenMathInstruct-1 and OpenMathInstruct-2 datasets to evaluate Data-level vs. Problem-level diversity.
+Process the `OpenMathInstruct-1` and `OpenMathInstruct-2` datasets to evaluate Data-level vs. Problem-level diversity.
 
 ```Bash
 python src/data_generation/prepare_math.py --dataset gsm8k --strategy problem_level
@@ -66,39 +75,40 @@ Generate the base-7, 9, 11, and 12 counterfactual arithmetic datasets to test un
 
 [] TODO
 
-### Simple knowledge questions - CapitalQA
+### CapitalQA
 Prepare the CapitalQA dataset to evaluate over-thinking behaviors on simple factual queries.
 
 [] TODO
 
-## 🚀 Training
 
-### Supervised Fine-Tuning (SFT)
-Run the 16-epoch SFT pipeline used for Qwen-2.5-0.5B and EvoLM-1B.
+## Training Runs
+
+### SFT
+Run the 16-epoch SFT pipeline used for backbone `Qwen-2.5-0.5B` or `EvoLM-1B`.
 
 ```Bash
 bash run_sft_mathgraph.sh pathstar_2_10_forward qwen2.5_0.5b
 bash run_sft_mathgraph.sh pathstar_2_10_reverse qwen2.5_0.5b
 ```
 
-### Reinforcement Learning (RLVR)
-Apply Group Relative Policy Optimization (GRPO) on the SFT checkpoints.
+### RLVR
+Continue specific SFT checkpoints with RLVR.
 
 ```Bash
-bash run_grpo.sh qwen2.5_0.5b-pathstar_2_10-forward-sftep1 4
+bash run_grpo_mathgraph.sh qwen2.5_0.5b-pathstar_2_10-forward-sftep1 4
 ```
 
 
-## 🧠 Inference & Evaluation
+## Inference & Evaluation
 
 We use a scalable, multi-GPU batch sampling pipeline orchestrated by a custom bash scheduler.
 
-1. Run High-Throughput Batch Sampling Configure your AVAILABLE_GPUS inside the script, then spawn the batch inference jobs. This process is driven by individual `sampler_config.yaml` files located in your target job directories.
+1. **Run High-Throughput Sampling:** Configure your AVAILABLE_GPUS inside the script, then spawn the batch inference jobs. This process is driven by individual `sampler_config.yaml` files located in your target job directories.
 ```Bash
 bash spawn_sampling.sh
 ```
 
-2. Evaluate `pass@k` Metrics Once the generations are complete, compute the detailed `pass@k` coverage metrics using the optimized evaluation script.
+2. **Evaluate `pass@k`:** Once the generations are complete, compute the detailed `pass@k` coverage metrics using the optimized evaluation script.
 
 ```Bash
 python src/math_eval/evaluate_pass_k.py \
@@ -108,5 +118,5 @@ python src/math_eval/evaluate_pass_k.py \
   --workers 16
 ```
 
-## 📝 Citation
+## Citation
 If you find this code or our findings useful in your research, please cite our paper:
