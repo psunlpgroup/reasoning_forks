@@ -19,7 +19,7 @@ This repository includes all code for data generation, training pipelines, and e
 
 ## Overview
 
-**Why Do Reasoning Models Lose Coverage?**, 
+*Why Do Reasoning Models Lose Coverage?*
 
 In this paper, we revisit this open question with **a data-centric lens**, and show **how “forks in the road”** situations in the post-training data **can shape—and shrink—model coverage**. 
 
