@@ -41,7 +41,7 @@ With better data design + data-inspired decoding strategies, it can be recovered
 
 ![viz](./images/reasoning_forks.png)
 
-## ⚙️ Installation
+## Installation
 
 We recommend using [`uv`](https://github.com/astral-sh/uv) for lightning-fast Python environment management and dependency installation.
 
