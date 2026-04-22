@@ -17,11 +17,11 @@ This repository includes all code for data generation, training pipelines, and e
 - [Inference & Evaluation](#inference--evaluation)
 - [Citation](#citation) -->
 
-## 🔍 Overview
+## Overview
 
 **Why Do Reasoning Models Lose Coverage?**, 
 
-In this paper, we revisit this open question with a data-centric lens, and show **how “forks in the road”** situations in the post-training data **can shape—and shrink—model coverage**. 
+In this paper, we revisit this open question with **a data-centric lens**, and show **how “forks in the road”** situations in the post-training data **can shape—and shrink—model coverage**. 
 
 To test this, we design controlled environments that isolate and expose decision-points structures via (a) graph branching, and (b) reasoning mode selection. Our findings show that sharpening isn’t just about post-training algorithms it’s also deeply shaped by data and its design. We learned that:
 
