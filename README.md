@@ -60,26 +60,26 @@ uv pip install -r requirements.txt
 ## Datasets
 Below are the scripts used for data generation in each task: 
 
-### Graph Branching
+#### Graph Branching
 Generate the 6,400 SFT training samples, 1600 RLVR training samples, and 1,000 test samples in the Alpaca instruction format.
 
 ```Bash
 python src/data_generation/gen_math_graph.py
 ```
 
-### Mathematical Reasoning Modes
+#### Mathematical Reasoning Modes
 Process the `OpenMathInstruct-1` and `OpenMathInstruct-2` datasets to evaluate Data-level vs. Problem-level diversity.
 
 ```Bash
 python src/data_generation/prepare_math.py --dataset gsm8k --strategy problem_level
 ```
 
-### CounterFactual Arithmetic
+#### CounterFactual Arithmetic
 Generate the base-7, 9, 11, and 12 counterfactual arithmetic datasets to test under-thinking phenomena.
 
 [] TODO
 
-### CapitalQA
+#### CapitalQA
 Prepare the CapitalQA dataset to evaluate over-thinking behaviors on simple factual queries.
 
 [] TODO
@@ -87,7 +87,7 @@ Prepare the CapitalQA dataset to evaluate over-thinking behaviors on simple fact
 
 ## Training Runs
 
-### SFT
+#### SFT
 Run the 16-epoch SFT pipeline used for backbone `Qwen-2.5-0.5B` or `EvoLM-1B`.
 
 ```Bash
@@ -95,7 +95,7 @@ bash run_sft_mathgraph.sh pathstar_2_10_forward qwen2.5_0.5b
 bash run_sft_mathgraph.sh pathstar_2_10_reverse qwen2.5_0.5b
 ```
 
-### RLVR
+#### RLVR
 Continue specific SFT checkpoints with RLVR.
 
 ```Bash
