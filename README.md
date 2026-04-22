@@ -88,7 +88,7 @@ Prepare the CapitalQA dataset to evaluate over-thinking behaviors on simple fact
 ## Training Runs
 
 #### SFT
-Run the 16-epoch SFT pipeline used for backbone `Qwen-2.5-0.5B` or `EvoLM-1B`.
+Run the 16-epoch SFT pipeline on a task (eg graph branching) with backbone (eg `Qwen-2.5-0.5B`).
 
 ```Bash
 bash run_sft_mathgraph.sh pathstar_2_10_forward qwen2.5_0.5b
@@ -123,4 +123,22 @@ python src/math_eval/evaluate_pass_k.py \
 ```
 
 ## Citation
-If you find this code or our findings useful in your research, please cite our paper:
+If you find this repo or our findings useful in your research, please cite us with:
+<pre>
+@article{
+}
+</pre>
+
+TODO
+
+
+## License 
+This repository is licensed under MIT licence.
+
+This work is built on top of other open source projects, including [X](). We thank the original contributors of these works for open-sourcing their valuable source codes. 
+
+
+## Contact Us
+For any questions or issues, you are welcome to open an issue in this repo, or contact us at [EMAIL]
+
+
