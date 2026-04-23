@@ -177,7 +177,10 @@ cython_debug/
 .pypirc
 
 # /debug_scripts/
-# runs/
 # datasets
-datasets/math_graph
+runs/
+datasets/arithchain_2_10
 tmp/
+unsloth_compiled_cache/
+job_list.txt
+inference_runs/

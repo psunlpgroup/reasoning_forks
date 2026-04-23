@@ -30,10 +30,10 @@ def parse_args():
     parser.add_argument("--prompt_key", type=str, default="question")
     parser.add_argument("--response_key", type=str, default="answer")
     parser.add_argument(
-        "--apply_chat_template",
+        "--chat_template_path",
         type=str,
         default=None,
-        help="Name of chat template to apply. E.g., 'sharegpt', 'responses_only'."
+        help="Path to chat template file to apply. E.g., 'templates/sharegpt_chat_template.json', etc."
     )
 
     # Instruction
@@ -95,58 +95,41 @@ def load_model_and_tokenizer(args):
 # -------------------------------------------------
 # Dataset Preparation
 # -------------------------------------------------
-
-alpaca_prompt = """Below is an instruction that describes a task, paired with an input that provides further context. Write a response that appropriately completes the request.
-
-### Instruction:
-Solve the following math problem, and put your final answer within \\\\boxed{{}}.
-
-### Input:
-{}
-
-### Response:
-{}"""
-
-evolm_prompt = """Human: {}
-Assistant: {}"""
-
 def load_and_prepare_dataset(tokenizer, args):
     dataset = load_dataset("parquet", data_files=args.data_path)["train"]
     print("dataset size: ", len(dataset))
     print(dataset[0])
 
-    # dataset = dataset.map(
-    #     lambda e: {
-    #         "messages": [
-    #             {"role": "user", "content": e[args.prompt_key]},
-    #             {"role": "assistant", "content": " " + e[args.response_key]},
-    #         ]
-    #     }
-    # )
-    # dataset = standardize_sharegpt(dataset)
+    dataset = dataset.map(
+        lambda e: {
+            "messages": [
+                {"role": "user", "content": e[args.prompt_key]},
+                {"role": "assistant", "content": " " + e[args.response_key]},
+            ]
+        }
+    )
+    dataset = standardize_sharegpt(dataset)
+
+    # Determine chat_template: Use file if path provided, else use tokenizer default
+    chat_template = None
+    if getattr(args, "chat_template_path", None) is not None:
+        with open(args.chat_template_path, "r", encoding="utf-8") as f:
+            chat_template = f.read()
+    else:
+        # Use the default template embedded in the tokenizer if available
+        chat_template = getattr(tokenizer, "chat_template", None)
 
     def format_batch(examples):
-        # texts = [
-        #     tokenizer.apply_chat_template(
-        #         convo,
-        #         tokenize=False,
-        #         add_generation_prompt=False,
-        #     )
-        #     for convo in examples["messages"]
-        # ]
-
-        inputs = examples[args.prompt_key]
-        outputs = examples[args.response_key]
-        texts = []
-        if args.apply_chat_template == "evolm":
-            for i, o in zip(inputs, outputs):
-                texts.append(evolm_prompt.format(i, o.strip()))
-            return {"text": texts}
-        else:
-            for i, o in zip(inputs, outputs):
-                texts.append(alpaca_prompt.format(i, o))
-            return {"text": texts}
-   
+        texts = [
+            tokenizer.apply_chat_template(
+                convo,
+                tokenize=False,
+                add_generation_prompt=False,
+                chat_template=chat_template,
+            )
+            for convo in examples["messages"]
+        ]
+        return {"text": texts}
 
     dataset = dataset.map(format_batch, batched=True)
 

@@ -1,0 +1,6 @@
+vllm==0.18.0
+transformers==5.0.0
+unsloth
+trl
+pandarallel
+latex2sympy2

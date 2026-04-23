@@ -135,12 +135,19 @@ def generate_problem_description(problem: dict, shuffle=True):
     template = PROBLEM_TEMPLATES[1]
     return template(relation_descriptions, given_str, problem['target'])
 
+opening_sentences = [
+    "To find the target value, we compute the following variables step by step:",
+    "We compute the following variables step by step to obtain the target value.",
+    "The target value is found by sequentially computing the following variables.",
+]
+
 def generate_answer_description(problem, answer):
     is_reverse = answer['is_reverse']
     steps = answer['steps']
     target = answer['target_var_name']
     
-    lines = ["To find the target value, we compute the following variables step by step:"]
+    lines = [random.choice(opening_sentences)]
+
     if not is_reverse:
         for i, (var, expr, val) in enumerate(steps, 1):
             lines.append(f"{i}. {var} = {expr} = {val}.")
@@ -193,14 +200,12 @@ def make_map_fn(split):
         meta = json.loads(example['meta'])
         question = example["question"]
         return {
-            "data_source": example['world_id'],
-            "prompt": [{"role": "user", "content": question}],
-            "ability": "math",
-            "reward_model": {"style": "number", "ground_truth": meta["answer"]["target_value"]},
-            "answer": example["answer"],
             "question": question,
-            "direction": example["direction"],
+            "solution": example["answer"],
+            "answer": meta["answer"]["target_value"],
             "extra_info": {
+                "data_source": example['world_id'],
+                "direction": example["direction"],
                 "split": split,
                 "index": idx,
             },
@@ -213,7 +218,7 @@ def make_map_fn(split):
 
 WORLDS = [
     {
-        "id": "pathstar_2_10",
+        "id": "arithchain_2_10",
         "math_world": "<|a1|>=<|p0|>+{},<|a2|>=<|a1|>+{},<|a3|>=<|a2|>+{},<|a4|>=<|a3|>+{},<|a5|>=<|a4|>+{},<|a6|>=<|a5|>+{},<|a7|>=<|a6|>+{},<|a8|>=<|a7|>+{},<|a9|>=<|a8|>+{},<|a10|>=<|a9|>+{},<|b1|>=<|p0|>+{},<|b2|>=<|b1|>+{},<|b3|>=<|b2|>+{},<|b4|>=<|b3|>+{},<|b5|>=<|b4|>+{},<|b6|>=<|b5|>+{},<|b7|>=<|b6|>+{},<|b8|>=<|b7|>+{},<|b9|>=<|b8|>+{},<|b10|>=<|b9|>+{}",
         "num_constants": 20,
         "premise_nodes": ("<|p0|>", ),
@@ -228,7 +233,7 @@ if __name__ == "__main__":
     parser.add_argument("--sft_train_size", type=int, default=6400, help="Number of unique base training samples")
     parser.add_argument("--rlvr_train_size", type=int, default=1600, help="Number of unique base training samples")
     parser.add_argument("--test_size", type=int, default=1000, help="Number of unique base test samples")
-    parser.add_argument("--data_dir", type=str, default="./datasets/graph", help="Output directory for parquets")
+    parser.add_argument("--data_dir", type=str, default="./datasets", help="Output directory for parquets")
     parser.add_argument("--seed", type=int, default=42, help="Random seed for reproducibility")
     args = parser.parse_args()
     
@@ -242,8 +247,8 @@ if __name__ == "__main__":
         base_problems = generate_unique_problems(total_size, world_config)
 
         # 2. Divide into Train and Test subsets
-        sft_train_base_problems = base_problems[:args.args.sft_train_size]
-        rlvr_train_base_problems = base_problems[args.args.sft_train_size:args.sft_train_size + args.rlvr_train_size]
+        sft_train_base_problems = base_problems[:args.sft_train_size]
+        rlvr_train_base_problems = base_problems[args.sft_train_size:args.sft_train_size + args.rlvr_train_size]
         test_base_problems = base_problems[args.sft_train_size + args.rlvr_train_size:]
 
         # 3. Apply traces: Build Forward and Reverse sets independently
@@ -262,7 +267,7 @@ if __name__ == "__main__":
 
             # For rlvr trainset, we only use the traces for verification
             rlvr_trace = generate_solution_trace(p, world_config['forward_solution'], reverse=False) 
-            rlvr_train_samples.append(convert_sample_to_prompt(fwd_trace, world_config['id'], 'forward'))
+            rlvr_train_samples.append(convert_sample_to_prompt(rlvr_trace, world_config['id'], 'forward'))
             
         random.shuffle(sft_train_forward_samples)
         random.shuffle(sft_train_reverse_samples)
@@ -280,17 +285,17 @@ if __name__ == "__main__":
         raw_train_rlvr = datasets.Dataset.from_list(rlvr_train_samples)
         raw_test = datasets.Dataset.from_list(test_samples)
 
-        processed_train_forward = raw_train_forward.map(function=make_map_fn("train_forward"), with_indices=True)
-        processed_train_reverse = raw_train_reverse.map(function=make_map_fn("train_reverse"), with_indices=True)
-        processed_train_rlvr = raw_train_rlvr.map(function=make_map_fn("rlvr"), with_indices=True)
+        processed_train_forward = raw_train_forward.map(function=make_map_fn("train_sft_forward"), with_indices=True)
+        processed_train_reverse = raw_train_reverse.map(function=make_map_fn("train_sft_reverse"), with_indices=True)
+        processed_train_rlvr = raw_train_rlvr.map(function=make_map_fn("train_rlvr"), with_indices=True)
         processed_test = raw_test.map(function=make_map_fn("test"), with_indices=True)
 
         # Save Locally
         output_dir = os.path.join(args.data_dir, world_config['id'])
         os.makedirs(output_dir, exist_ok=True)
         
-        processed_train_forward.to_parquet(os.path.join(output_dir, "train_forward.parquet"))
-        processed_train_reverse.to_parquet(os.path.join(output_dir, "train_reverse.parquet"))
+        processed_train_forward.to_parquet(os.path.join(output_dir, "train_sft_forward.parquet"))
+        processed_train_reverse.to_parquet(os.path.join(output_dir, "train_sft_reverse.parquet"))
         processed_train_rlvr.to_parquet(os.path.join(output_dir, "train_rlvr.parquet"))
         processed_test.to_parquet(os.path.join(output_dir, "test.parquet"))
 
@@ -306,11 +311,11 @@ if __name__ == "__main__":
             processed_prompt_data.append({
                 "id": idx,
                 "Question": e["question"],
-                "answer": e['reward_model']['ground_truth'],
-                "subset": e['data_source'],
+                "answer": e['answer'],
+                "subset": e['extra_info']['data_source'],
             })
             
         with open(os.path.join(output_dir, "test.json"), "w") as f:
             json.dump(processed_prompt_data, f, indent=4)
         
-    print(f"Pipeline Complete. Generated {args.train_size} Forward train samples, {args.train_size} Reverse train samples, and {args.test_size} test samples.")
+    print(f"Pipeline Complete. Generated {len(sft_train_forward_samples)} Forward train samples, {len(sft_train_reverse_samples)} Reverse train samples, and {len(test_samples)} test samples.")

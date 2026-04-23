@@ -11,14 +11,9 @@ DATA_ROOT="/scratch1/hnn5071/workspace/rm-limeval/datasets"
 ########################
 declare -A MODEL_CONFIGS
 
-MODEL_CONFIGS["qwen2.5_0.5b"]="unsloth/Qwen2.5-0.5B 32 1 5e-5"
-MODEL_CONFIGS["qwen2.5_1.5b"]="unsloth/Qwen2.5-1.5B 32 1 3e-5"
-MODEL_CONFIGS["llama3.2_1b"]="unsloth/Llama-3.2-1B 32 1 3e-5"
-MODEL_CONFIGS["llama3.2_3b"]="unsloth/Llama-3.2-3B 32 1 3e-5"
-MODEL_CONFIGS["gemma3_1b"]="unsloth/gemma-3-1b-pt 32 2 3e-5"
-MODEL_CONFIGS["gemma3_4b"]="unsloth/gemma-3-4b-pt 16 2 3e-5"
-MODEL_CONFIGS["llama3.1_8b"]="unsloth/Llama-3.1-8B 16 1 3e-5"
-MODEL_CONFIGS["evolm-4b"]="zhenting/evolm-4B-160BT-cpt-MixedFW8FM42 8 4 3e-5"
+MODEL_CONFIGS["qwen2.5_0.5b"]="unsloth/Qwen2.5-0.5B 32 1 1e-5"
+MODEL_CONFIGS["evolm-1b"]="zhenting/evolm-1B-160BT-cpt-MixedFW8FM42 32 1 1e-5"
+MODEL_CONFIGS["evolm-4b"]="zhenting/evolm-4B-160BT-cpt-MixedFW8FM42 32 1 1e-5"
 
 # Validate model
 if [ -z "${model_short_name}" ]; then
@@ -44,16 +39,16 @@ TOTAL_BATCH_SIZE=$((BATCH_SIZE * GRAD_ACCUM))
 ########################
 declare -A DATA_PATHS
 declare -A DATA_SIZES   # for dynamic SAVE_STEPS
-DATA_PATHS["gsm8k_datasetlevelcombined"]="${DATA_ROOT}/mixing_styles/final/Mar20/gsm8k_datasetlevelcombined.parquet"
-DATA_PATHS["gsm8k_single_mix"]="${DATA_ROOT}/mixing_styles/final_v2/gsm8k_train_single_mix.parquet"
 
-# Dataset sizes (only needed when computing dynamically)
-DATA_SIZES["mathgsm8k_nlreasoning"]=23694
-DATA_SIZES["mathgsm8k_code"]=23694
-DATA_SIZES["gsm8k_nlreasoning"]=12850
-DATA_SIZES["gsm8k_code"]=12850
-DATA_SIZES["gsm8k_datasetlevelcombined"]=12850
-DATA_SIZES["gsm8k_single_mix"]=6400
+DATA_PATHS["arithchain_2_10_forward"]="datasets/arithchain_2_10/train_sft_forward.parquet"
+DATA_PATHS["arithchain_2_10_reverse"]="datasets/arithchain_2_10/train_sft_reverse.parquet"
+DATA_PATHS["gsm8k_datasetlevel"]="nnheui/reasoning_modes|gsm8k_train_double_datasetlevel"
+DATA_PATHS["gsm8k_problemlevel"]="nnheui/reasoning_modes|gsm8k_train_double_problemlevel"
+
+DATA_SIZES["arithchain_2_10_forward"]=6400
+DATA_SIZES["arithchain_2_10_reverse"]=6400
+DATA_SIZES["gsm8k_datasetlevel"]=12800
+DATA_SIZES["gsm8k_problemlevel"]=12800
 
 # Validate dataset
 if [ -z "${DATASET_NAME}" ]; then
@@ -106,8 +101,8 @@ echo "SAVE_STEPS: $SAVE_STEPS"
 
 
 NUM_TRAIN_EPOCHS=8
-WANDB_PROJECT="reasoning_style_sft"
-RUN_NAME="unsloth_${model_short_name}_sft_ep8_${DATASET_NAME}_lr${LR}_bs${BATCH_SIZE}_ga${GRAD_ACCUM}"
+WANDB_PROJECT="reasoning_forks_sft"
+RUN_NAME="${model_short_name}_sft_${DATASET_NAME}_lr${LR}_bs${BATCH_SIZE}_ga${GRAD_ACCUM}"
 
 OUTPUT_DIR="runs/${WANDB_PROJECT}/${RUN_NAME}"
 
@@ -129,11 +124,12 @@ echo "Logs: ${LOG_FILE}"
 # Launch
 # --------------------------------------------------
 
-python src/sft.py \
+python src/training/sft.py \
   --model_name ${MODEL_NAME} \
   --data_path ${DATA_PATH} \
   --prompt_key "question" \
   --response_key "solution" \
+  --chat_template_path src/alpaca_template.jira \
   --batch_size ${BATCH_SIZE} \
   --grad_accum ${GRAD_ACCUM} \
   --warmup_ratio 0.1 \

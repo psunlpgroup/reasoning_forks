@@ -3,59 +3,34 @@
 trap 'echo "Cleaning up..."; kill -9 -$$ 2>/dev/null' EXIT
 
 # -----------------------------
-# Define available GPUs (separate)
+# GPUs
 # -----------------------------
-AVAILABLE_GPUS=(6 7)
-
-# Define jobs: "JOB_DIR|RUN_NAME|SPLIT|NUM_SAMPLES"
-JOB_SPLIT_PAIRS=(
-    "inference_runs/ds-distill/ds-qwen-1.5b|default|aime24_test|8"
-    "inference_runs/ds-distill/ds-qwen-1.5b|prefix_Alright|aime24_test|8"
-    "inference_runs/ds-distill/ds-qwen-1.5b|prefix_Let|aime24_test|8"
-    "inference_runs/ds-distill/ds-qwen-1.5b|prefix_Okay|aime24_test|8"
-    "inference_runs/ds-distill/ds-qwen-1.5b|prefix_To|aime24_test|8"
-
-    "inference_runs/ds-distill/ds-qwen-1.5b|default|aime25_test|8"
-    "inference_runs/ds-distill/ds-qwen-1.5b|prefix_Alright|aime25_test|8"
-    "inference_runs/ds-distill/ds-qwen-1.5b|prefix_Let|aime25_test|8"
-    "inference_runs/ds-distill/ds-qwen-1.5b|prefix_Okay|aime25_test|8"
-    "inference_runs/ds-distill/ds-qwen-1.5b|prefix_To|aime25_test|8"
-
-    "inference_runs/ds-distill/ds-qwen-1.5b|default|gsm8k_test|8"
-    "inference_runs/ds-distill/ds-qwen-1.5b|prefix_Alright|gsm8k_test|8"
-    "inference_runs/ds-distill/ds-qwen-1.5b|prefix_Let|gsm8k_test|8"
-    "inference_runs/ds-distill/ds-qwen-1.5b|prefix_Okay|gsm8k_test|8"
-    "inference_runs/ds-distill/ds-qwen-1.5b|prefix_To|gsm8k_test|8"
-
-    "inference_runs/ds-distill/ds-qwen-1.5b|default|math500_test|8"
-    "inference_runs/ds-distill/ds-qwen-1.5b|prefix_Alright|math500_test|8"
-    "inference_runs/ds-distill/ds-qwen-1.5b|prefix_Let|math500_test|8"
-    "inference_runs/ds-distill/ds-qwen-1.5b|prefix_Okay|math500_test|8"
-    "inference_runs/ds-distill/ds-qwen-1.5b|prefix_To|math500_test|8"
-
-    "inference_runs/ds-distill/ds-qwen-1.5b|default|arithmetic_counterfact|8"
-    "inference_runs/ds-distill/ds-qwen-1.5b|prefix_Alright|arithmetic_counterfact|8"
-    "inference_runs/ds-distill/ds-qwen-1.5b|prefix_Let|arithmetic_counterfact|8"
-    "inference_runs/ds-distill/ds-qwen-1.5b|prefix_Okay|arithmetic_counterfact|8"
-    "inference_runs/ds-distill/ds-qwen-1.5b|prefix_To|arithmetic_counterfact|8"
-
-    "inference_runs/ds-distill/ds-qwen-1.5b|default|capitalQA|8"
-    "inference_runs/ds-distill/ds-qwen-1.5b|prefix_Alright|capitalQA|8"
-    "inference_runs/ds-distill/ds-qwen-1.5b|prefix_Let|capitalQA|8"
-    "inference_runs/ds-distill/ds-qwen-1.5b|prefix_Okay|capitalQA|8"
-    "inference_runs/ds-distill/ds-qwen-1.5b|prefix_To|capitalQA|8"
-)
+AVAILABLE_GPUS=(4 5 6 7)
 
 # -----------------------------
-# Step 1: Build job queue
+# Load jobs from file
+# -----------------------------
+JOB_FILE="job_list.txt"
+
+mapfile -t JOB_SPLIT_PAIRS < "$JOB_FILE"
+
+echo "Total jobs: ${#JOB_SPLIT_PAIRS[@]}"
+echo "Available GPUs: ${AVAILABLE_GPUS[*]}"
+
+# -----------------------------
+# Build job queue
 # -----------------------------
 JOBS=()
 
 for PAIR in "${JOB_SPLIT_PAIRS[@]}"; do
     IFS="|" read -r JOB_DIR RUN_NAME SPLIT NUM_SAMPLES <<< "$PAIR"
-    echo "$JOB_DIR/$RUN_NAME"
-    mapfile -t SAMPLE_DIRS < <(find "$JOB_DIR" -mindepth 1 -maxdepth 4 -type d \
-        -path "$JOB_DIR/$RUN_NAME" | sort)
+
+    echo "Processing: $JOB_DIR/$RUN_NAME"
+
+    mapfile -t SAMPLE_DIRS < <(
+        find "$JOB_DIR" -mindepth 1 -maxdepth 4 -type d \
+        -path "$JOB_DIR/$RUN_NAME" | sort
+    )
 
     for SAMPLE_DIR in "${SAMPLE_DIRS[@]}"; do
         SAMPLER_CONFIG_DIR=$(realpath --relative-to="$JOB_DIR" "$SAMPLE_DIR")
@@ -64,11 +39,10 @@ for PAIR in "${JOB_SPLIT_PAIRS[@]}"; do
     done
 done
 
-echo "Total jobs: ${#JOBS[@]}"
-echo "Available GPUs: ${AVAILABLE_GPUS[*]}"
+echo "Expanded jobs: ${#JOBS[@]}"
 
 # -----------------------------
-# Step 2: Scheduler
+# Scheduler
 # -----------------------------
 declare -A GPU_PIDS
 
@@ -78,14 +52,13 @@ TOTAL_JOBS=${#JOBS[@]}
 while [ "$JOB_IDX" -lt "$TOTAL_JOBS" ]; do
     for GPU in "${AVAILABLE_GPUS[@]}"; do
 
-        # Skip if GPU is busy
+        # Skip busy GPU
         if [[ -n "${GPU_PIDS[$GPU]}" ]]; then
             if kill -0 "${GPU_PIDS[$GPU]}" 2>/dev/null; then
                 continue
             fi
         fi
 
-        # Assign next job
         JOB="${JOBS[$JOB_IDX]}"
         IFS="|" read -r JOB_DIR SPLIT SAMPLER_CONFIG_DIR NUM_SAMPLES <<< "$JOB"
 
@@ -102,7 +75,6 @@ while [ "$JOB_IDX" -lt "$TOTAL_JOBS" ]; do
         GPU_PIDS[$GPU]=$!
         ((JOB_IDX++))
 
-        # Stop if no more jobs
         if [ "$JOB_IDX" -ge "$TOTAL_JOBS" ]; then
             break
         fi
@@ -111,8 +83,5 @@ while [ "$JOB_IDX" -lt "$TOTAL_JOBS" ]; do
     sleep 1
 done
 
-# -----------------------------
-# Step 3: Wait for remaining jobs
-# -----------------------------
 wait
 echo "All jobs finished"

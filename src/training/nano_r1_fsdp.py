@@ -75,8 +75,8 @@ arg_parser.add_argument("--max_iter", type=int, default=1000, help="Maximum numb
 
 # Load and process dataset
 def preprocess_example(example: Dict[str, Any], tokenizer: AutoTokenizer):
-    prefix = example["prompt"]
-    input_ids = tokenizer.apply_chat_template(prefix, tokenize=True, add_generation_prompt=True)['input_ids']
+    query = {"role": "user", "content": example["question"]}
+    input_ids = tokenizer.apply_chat_template(query, tokenize=True, add_generation_prompt=True)['input_ids']
     
     # Force cast to standard Python integers to avoid Arrow/Dataset typing issues
     # input_ids = [int(x) for x in input_ids] 
@@ -271,23 +271,8 @@ def main(rank: int):
     tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
     EOS_TOKEN_ID = tokenizer.eos_token_id
     EOS_TOKEN = tokenizer.convert_ids_to_tokens(EOS_TOKEN_ID)
-    tokenizer.chat_template = """{% for message in messages %}
-{% if message['role'] == 'system' %}
-{{ message['content'] }}
-{% elif message['role'] == 'user' %}
-Below is an instruction that describes a task, paired with an input that provides further context. Write a response that appropriately completes the request.
-
-### Instruction:
-Solve the following math problem, and put your final answer within \\boxed{}.
-
-### Input:
-{{ message['content'] }}
-
-### Response:
-{% elif message['role'] == 'assistant' %}
-{{ message['content'] }}
-{% endif %}
-{% endfor %}"""
+    with open("src/alpaca_template.jira", "r") as f:
+        tokenizer.chat_template = f.read()
 
     dataset = load_dataset("parquet", 
                             data_files=args.data_path)['train']
