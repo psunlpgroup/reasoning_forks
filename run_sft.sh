@@ -2,7 +2,8 @@
 
 DATASET_NAME=$1
 model_short_name=$2
-shift 2
+NUM_TRAIN_EPOCHS=$3
+shift 3
 
 DATA_ROOT="/scratch1/hnn5071/workspace/rm-limeval/datasets"
 
@@ -99,8 +100,6 @@ echo "DATA_PATH: $DATA_PATH"
 echo "DATA_SIZE: $DATA_SIZE"
 echo "SAVE_STEPS: $SAVE_STEPS"
 
-
-NUM_TRAIN_EPOCHS=8
 WANDB_PROJECT="reasoning_forks_sft"
 RUN_NAME="${model_short_name}_sft_${DATASET_NAME}_lr${LR}_bs${BATCH_SIZE}_ga${GRAD_ACCUM}"
 

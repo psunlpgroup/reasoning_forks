@@ -1,5 +1,6 @@
 import json
 import argparse
+from multiprocessing import Value
 from pathlib import Path
 
 import pandas as pd
@@ -25,21 +26,20 @@ DATASET_PATHS = {
 parser = argparse.ArgumentParser()
 parser.add_argument("--dataset_name", type=str, required=True)
 parser.add_argument("--save_dir", type=str, required=True)
-parser.add_argument("--apply_chat_template", action="store_true")
-parser.add_argument("--tokenizer_path", type=str, default=None)
+parser.add_argument("--tokenizer_path", type=str)
+parser.add_argument(
+    "--chat_template_path",
+    type=str,
+    default=None,
+    help="Path to chat template file to apply. E.g., 'templates/sharegpt_chat_template.json', etc."
+)
+
 
 args = parser.parse_args()
 
 DATASET_NAME = args.dataset_name
 SAVE_DIR = Path(args.save_dir)
-APPLY_CHAT_TEMPLATE = args.apply_chat_template
 TOKENIZER_PATH = args.tokenizer_path
-
-# =======================
-# Load template
-# =======================
-QUESTION_PROMPT_TEMPLATE = None
-
 OUTPUT_PATH = SAVE_DIR / f"{DATASET_NAME}.prompts.csv"
 
 # =======================
@@ -47,35 +47,22 @@ OUTPUT_PATH = SAVE_DIR / f"{DATASET_NAME}.prompts.csv"
 # =======================
 def build_prompt(
     question: str,
-    template: str | None,
-    step_by_step: bool = True,
+    prompt_template: str | None = None,
     tokenizer=None,
-    apply_chat_template: bool = False,
 ):
-    if tokenizer and apply_chat_template:
+    prompt = question
+    if prompt_template:
+        prompt = prompt_template.replace("<question>", prompt) if "<question>" in prompt_template else prompt_template.format(question, "")
+
+    if tokenizer:
         prompt = tokenizer.apply_chat_template(
-            [{"role": "user", "content": question}],
+            [{"role": "user", "content": prompt}],
             tokenize=False,
             add_generation_prompt=True,
         )
-        return prompt
-    elif template:
-        prompt = template.replace("<question>", question) if "<question>" in template else template.format(question, "")
-        return prompt
-    # else:
-    #     base = "Please answer the following math question."
-    #     if step_by_step:
-    #         base += " You should think step by step to solve it."
-    #     prompt = (
-    #         f"{base}\n\n"
-    #         "Provide your final answer in the format \\boxed{YOUR_ANSWER}.\n\n"
-    #         f"Question:\n{question}\n\n"
-    #     )
     
-
+    return prompt
     
-
-
 # =======================
 # Load dataset
 # =======================
@@ -90,13 +77,14 @@ with open(data_path, "r", encoding="utf-8") as f:
 print(f"Num eval samples: {len(examples)}")
 
 # =======================
-# Tokenizer (optional)
+# Tokenizer
 # =======================
-tokenizer = None
-if APPLY_CHAT_TEMPLATE:
-    if not TOKENIZER_PATH:
-        raise ValueError("TOKENIZER_PATH must be set when --apply_chat_template is used")
-    tokenizer = AutoTokenizer.from_pretrained(TOKENIZER_PATH)
+tokenizer = AutoTokenizer.from_pretrained(TOKENIZER_PATH)
+# Determine chat_template: Use file if path provided, else use tokenizer default
+if getattr(args, "chat_template_path", None) is not None:
+    with open(args.chat_template_path, "r", encoding="utf-8") as f:
+        chat_template = f.read()
+    tokenizer.chat_template = chat_template
 
 # =======================
 # Process prompts
@@ -105,10 +93,7 @@ rows = []
 for e in examples:
     prompt = build_prompt(
         question=e["Question"],
-        template=QUESTION_PROMPT_TEMPLATE,
-        step_by_step=True,
         tokenizer=tokenizer,
-        apply_chat_template=APPLY_CHAT_TEMPLATE,
     )
 
     rows.append(

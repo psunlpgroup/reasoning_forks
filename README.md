@@ -84,16 +84,18 @@ Generate the base-7, 9, 11, and 12 counterfactual arithmetic datasets to test un
 The `CapitalQA` dataset to evaluate over-thinking behaviors on simple factual queries is provided at `datasets/capitalQA.json`.
 
 
+## Training
+
 ### Supervised Fine-Tuning (SFT)
 We use [Unsloth](https://unsloth.ai/) as the main framework for supervised finetuning. 
 Run the 16-epoch SFT pipeline on a task (eg graph branching) with backbone (eg `Qwen-2.5-0.5B`).
 
 ```Bash
 
-bash run_sft.sh arithchain_2_10_forward evolm-1b
+bash run_sft.sh arithchain_2_10_forward evolm-1b 16
 ```
 
-#### RLVR
+### RLVR
 Continue specific SFT checkpoints with RLVR.
 
 ```Bash
@@ -147,6 +149,85 @@ AVAILABLE_GPUS=(4 5 6 7)  # Configure your GPU IDs
 bash compute_passk.sh
 ```
 This script computes Pass@k metrics for each inference run. It aggregates results into a summary json file for analysis.
+
+
+## Key Experiments
+
+### Experiment 1: Graph Branching & Decision Points
+Tests how the structure of decision points in training data affects coverage shrinkage.
+
+**Steps**:
+1. SFT and RLVR on forward vs. reverse datasets followed by RLVR
+```Bash
+bash run_sft.sh arithchain_2_10_forward evolm_1b
+bash run_grpo.sh runs/reasoning_forks_sft/evolm_1b_sft_arithchain_2_10_forward_lr1e-5_bs32_ga1/checkpoint-200 4
+
+bash run_sft.sh arithchain_2_10_reverse evolm_1b
+bash run_grpo.sh runs/reasoning_forks_sft/evolm_1b_sft_arithchain_2_10_reverse_lr1e-5_bs32_ga1/checkpoint-200 4
+
+bash run_sft.sh arithchain_2_10_forward qwen2.5_0.5b
+bash run_grpo.sh runs/reasoning_forks_sft/qwen2.5_0.5b_sft_arithchain_2_10_forward_lr1e-5_bs32_ga1/checkpoint-200 4
+
+bash run_sft.sh arithchain_2_10_reverse qwen2.5_0.5b
+bash run_grpo.sh runs/reasoning_forks_sft/qwen2.5_0.5b_sft_arithchain_2_10_reverse_lr1e-5_bs32_ga1/checkpoint-200 4
+```
+
+2. Compute that pass@k for intermediate checkpoints
+
+```Bash
+bash prepare_sampling_synthetic.sh
+bash bash spawn_sampling.sh
+bash compute_passk.sh
+```
+
+### Experiment 2: Reasoning Mode Diversity
+Compares data-level vs. problem-level reasoning diversity effects on coverage.
+
+**Steps**:
+1. SFT on GSM8K-based datasets with controlled diversity
+
+```Bash
+bash run_sft.sh gsm8k_datasetlevel qwen2.5_0.5b 8
+bash run_sft.sh gsm8k_problemlevel qwen2.5_0.5b 8
+
+bash run_sft.sh gsm8k_datasetlevel evolm-1b 8
+bash run_sft.sh gsm8k_problemlevel evolm-1b 8
+
+bash run_sft.sh gsm8k_datasetlevel evolm-4b 8
+bash run_sft.sh gsm8k_problemlevel evolm-4b 8
+```
+
+2. Evaluation Pass@k and measure distribution of code-based solutions
+
+
+
+### Experiment 3: Linear and None-linear reasoning modes in Distilled Reasoning Models
+Tests how different reasoning prefixes (hidden control knobs) influence model behavior.
+
+**Steps**:
+```bash
+bash prepare_sampling_distilled_models_prefix.sh
+bash spawn_sampling.sh
+bash compute_passk.sh
+```
+
+### Experiment 4: Inference-Time Prefix Effects
+
+To study how inference-time prefixing affect coverage, configure your `sampler_config.yaml` as follows:
+
+```yaml
+sampler:
+  class: DiverPathVLLMSampler
+  model_name: ${ckpt_dir}
+  first_topk: 8
+  max_logprobs: 64
+  temperature: 1.0
+  top_p: 0.95
+  top_k: -1
+  max_tokens: 1024
+```
+
+This setup replicates the inference-time prefixing experiment. Be sure to substitute `${ckpt_dir}` with the path to your checkpoint.
 
 ## Citation
 If you find this repo or our findings useful in your research, please cite us with:

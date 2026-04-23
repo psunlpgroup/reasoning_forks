@@ -11,7 +11,6 @@ DATASETS=(
   "aime24"
   "aime25"
   "gsm8k"
-  "arithchain_2_10"
   "counterfact_addition"
   "capitalQA"
 )
