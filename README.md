@@ -74,7 +74,7 @@ python src/data_generation/gen_arithchain.py
 ```
 
 ### Mathematical Reasoning Modes
-The subsets of `OpenMathInstruct-1` and `OpenMathInstruct-2` datasets to evaluate Data-level vs. Problem-level diversity are available at [`nnheui/reasoning_modes`](https://huggingface.co/datasets/nnheui/reasoning_modes).
+The subsets of `OpenMathInstruct-1` and `OpenMathInstruct-2` datasets used in our experiments to evaluate Data-level vs. Problem-level diversity for NL/Code reasoning modes are provided at huggingface: [`nnheui/reasoning_modes`](https://huggingface.co/datasets/nnheui/reasoning_modes).
 
 
 ### CounterFactual Arithmetic
