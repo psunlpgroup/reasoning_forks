@@ -193,7 +193,7 @@ bash compute_passk.sh
 ```
 
 
-### Experiment 2: First Token Matters More than You’d Think! (Linear and Backtracking reasoning modes in Distilled Reasoning Models)
+### Experiment 2: First Token Matters More than You’d Think! (Linear and Backtracking Reasoning Modes)
 Our next evaluation testbed is Reasoning Mode Selection between the  Linear vs Backtracking thinking structure. We observe that with manipulation of only ONE token, changing first token (”Okay" → “To”), we can significantly change the model’s reasoning behavior and the corresponding performance. 
 
 Below is an example of command that tests different reasoning prefixes (hidden control knobs) and their influence on reasoning behavior.
