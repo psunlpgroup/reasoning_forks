@@ -103,7 +103,7 @@ bash run_grpo.sh
 
 
 ## Inference & Evaluation
-We present an example of running experiments for the prefix-based sampling analysis. The same scripts can be adapted for other inference experiments by modifying the configuration files.
+Below is an example command for running experiments of the prefix-based sampling analysis. The same script can also be adapted for other inference experiments by modifying the configuration files.
 
 ### Step 1: Prepare Inference Jobs
 
@@ -114,11 +114,13 @@ bash prepare_sampling_distilled_models_prefix.sh
 This script:
 - Creates inference run directories for different prefixes
 - Generates sampler config files for each task
+  
 
-**Configuration** (in the script):
+**Current Configuration** (in the script):
 - Model: DeepSeek-R1-Distill-Qwen-1.5B
 - Datasets: Math500, AIME24, AIME25, GSM8K, ArithChain, Counterfactual, CapitalQA
 - Prefixes tested: "Okay", "Let", "Alright", "To", and default (no prefix)
+
 
 ### Step 2: Run Batch Sampling with Multi-GPU Scheduling
 
@@ -126,7 +128,7 @@ This script:
 bash spawn_sampling.sh
 ```
 
-**Configuration** (in `spawn_sampling.sh`):
+**Current Configuration** (in `spawn_sampling.sh`):
 ```bash
 AVAILABLE_GPUS=(4 5 6 7)  # Configure your GPU IDs
 ```
@@ -141,6 +143,7 @@ AVAILABLE_GPUS=(4 5 6 7)  # Configure your GPU IDs
 **Expected output**:
 - Generated samples in JSON format for each configuration
 - Located in `inference_runs/` directory
+
 
 ### Step 3: Evaluate Pass@k Coverage
 
