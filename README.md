@@ -78,10 +78,10 @@ The subsets of `OpenMathInstruct-1` and `OpenMathInstruct-2` datasets used in ou
 
 
 ### CounterFactual Arithmetic
-Generate the base-7, 9, 11, and 12 counterfactual arithmetic datasets to test under-thinking phenomena using the notebook at `src/data_generation/counterfact_arithmetic.ipynb`.
+The base-7, 9, 11, and 12 counterfactual arithmetic datasets are used to test under-thinking reasoning behavior. This dataset is provided at: `src/data_generation/counterfact_arithmetic.ipynb`.
 
 ### Simple knowledge questions - CapitalQA
-The `CapitalQA` dataset to evaluate over-thinking behaviors on simple factual queries is provided at `datasets/capitalQA.json`.
+The `CapitalQA` dataset is used to evaluate over-thinking reasoning behaviors on simple factual queries. This dataset is provided at: `datasets/capitalQA.json`.
 
 
 ## Training
