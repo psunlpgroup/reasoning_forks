@@ -95,7 +95,7 @@ bash run_sft.sh arithchain_2_10_forward qwen2.5_0.5b 16
 ```
 
 ### RLVR
-Continue specific SFT checkpoints with RLVR.
+You can also continue specific SFT checkpoints with RLVR using this script (this can be helpful for the SFT vs RLVR coverage shrinkage comparison; check our graph branching experiments in Figure 13 for details).
 
 ```Bash
 bash run_grpo.sh
