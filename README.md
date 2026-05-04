@@ -156,17 +156,17 @@ This script computes Pass@k metrics for each inference run. It aggregates result
 ## Key Experiments
 
 ### Experiment 1: Graph Branching & Decision Points
-Tests how the structure of decision points in training data affects coverage shrinkage.
+Our first evaluation setting is Graph Branching which is a natural testbed for studying the impact of “decision point” on coverage shrinkage. In this setting, we train the same model on the same task, with only ablating the reasoning solution and exposure to decision points throughout forward and reverse graph traversals. 
 
-**Steps**:
-1. SFT and RLVR on forward vs. reverse datasets followed by RLVR
+
+<!-- Experiments on graph branching case study is mainly focused on how the structure of **decision points** in training data affects coverage shrinkage. -->
+
+
+#### Steps
+1. Here are the example commands for running SFT on forward vs. reverse reasoning solutions, followed by RLVR on SFT checkpoints.
+
+Qwen2.5-0.5B
 ```Bash
-bash run_sft.sh arithchain_2_10_forward evolm_1b
-bash run_grpo.sh runs/reasoning_forks_sft/evolm_1b_sft_arithchain_2_10_forward_lr1e-5_bs32_ga1/checkpoint-200 4
-
-bash run_sft.sh arithchain_2_10_reverse evolm_1b
-bash run_grpo.sh runs/reasoning_forks_sft/evolm_1b_sft_arithchain_2_10_reverse_lr1e-5_bs32_ga1/checkpoint-200 4
-
 bash run_sft.sh arithchain_2_10_forward qwen2.5_0.5b
 bash run_grpo.sh runs/reasoning_forks_sft/qwen2.5_0.5b_sft_arithchain_2_10_forward_lr1e-5_bs32_ga1/checkpoint-200 4
 
@@ -174,7 +174,17 @@ bash run_sft.sh arithchain_2_10_reverse qwen2.5_0.5b
 bash run_grpo.sh runs/reasoning_forks_sft/qwen2.5_0.5b_sft_arithchain_2_10_reverse_lr1e-5_bs32_ga1/checkpoint-200 4
 ```
 
-2. Compute that pass@k for intermediate checkpoints
+EvoLM-1B
+```Bash
+bash run_sft.sh arithchain_2_10_forward evolm_1b
+bash run_grpo.sh runs/reasoning_forks_sft/evolm_1b_sft_arithchain_2_10_forward_lr1e-5_bs32_ga1/checkpoint-200 4
+
+bash run_sft.sh arithchain_2_10_reverse evolm_1b
+bash run_grpo.sh runs/reasoning_forks_sft/evolm_1b_sft_arithchain_2_10_reverse_lr1e-5_bs32_ga1/checkpoint-200 4
+```
+
+
+2. Compute pass@k for each intermediate checkpoint throughout the training 
 
 ```Bash
 bash prepare_sampling_synthetic.sh
@@ -182,11 +192,30 @@ bash bash spawn_sampling.sh
 bash compute_passk.sh
 ```
 
-### Experiment 2: Reasoning Mode Diversity
-Compares data-level vs. problem-level reasoning diversity effects on coverage.
 
-**Steps**:
-1. SFT on GSM8K-based datasets with controlled diversity
+### Experiment 2: First Token Matters More than You’d Think! (Linear and Backtracking reasoning modes in Distilled Reasoning Models)
+Our next evaluation testbed is Reasoning Mode Selection between the  Linear vs Backtracking thinking structure. We observe that with manipulation of only ONE token, changing first token (”Okay" → “To”), we can significantly change the model’s reasoning behavior and the corresponding performance. 
+
+Below is an example of command that tests different reasoning prefixes (hidden control knobs) and their influence on reasoning behavior.
+
+```bash
+bash prepare_sampling_distilled_models_prefix.sh
+bash spawn_sampling.sh
+bash compute_passk.sh
+```
+
+
+### Experiment 3: The Important Role of Data Diversity Structure
+We also study NL vs Code reasoning mode selection as another decision point setting. In this experiment, we asked: does data diversity affect post-training coverage? and how?
+To study this, we trained models on NL/Code data mix in two ways: 1) diversity spread across problems (data-level diversity); and 2) diversity within each problem (problem-level diversity). 
+
+
+Here are example commands to run SFT on datasets with data-level vs. problem-level reasoning diversity and analyze its impact on coverage.
+
+
+<!-- **Steps**: -->
+
+SFT on GSM8K-based datasets with controlled diversity
 
 ```Bash
 bash run_sft.sh gsm8k_datasetlevel qwen2.5_0.5b 8
@@ -199,23 +228,17 @@ bash run_sft.sh gsm8k_datasetlevel evolm-4b 8
 bash run_sft.sh gsm8k_problemlevel evolm-4b 8
 ```
 
-2. Evaluation Pass@k and measure distribution of code-based solutions
+<!-- 2. Evaluation Pass@k and measure distribution of code-based solutions -->
 
 
 
-### Experiment 3: Linear and None-linear reasoning modes in Distilled Reasoning Models
-Tests how different reasoning prefixes (hidden control knobs) influence model behavior.
 
-**Steps**:
-```bash
-bash prepare_sampling_distilled_models_prefix.sh
-bash spawn_sampling.sh
-bash compute_passk.sh
-```
 
-### Experiment 4: Inference-Time Prefix Effects
+### Experiment 4: Data-inspired Shrinkage Mitigation
 
-To study how inference-time prefixing affect coverage, configure your `sampler_config.yaml` as follows:
+If first tokens act as decision points, can we use them to recover lost coverage? In this experiment, we enforce perturbation in the sampling of first token among top-k options instead of the standard decoding (without the need for retraining!). We observe that it can effectively nudge the model into different reasoning paths, and significantly restore their lost coverage.
+
+To replicate these experiments, configure your `sampler_config.yaml` as follows. Make sure to substitute `${ckpt_dir}` with the path to your checkpoint.
 
 ```yaml
 sampler:
@@ -229,7 +252,10 @@ sampler:
   max_tokens: 1024
 ```
 
-This setup replicates the inference-time prefixing experiment. Be sure to substitute `${ckpt_dir}` with the path to your checkpoint.
+<!-- To study how inference-time prefixing affect coverage This setup replicates the inference-time prefixing experiment.  -->
+
+
+
 
 ## Citation
 If you find this repo or our findings useful in your research, please cite us with:
