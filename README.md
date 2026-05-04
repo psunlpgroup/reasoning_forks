@@ -87,7 +87,7 @@ The `CapitalQA` dataset is used to evaluate over-thinking reasoning behaviors on
 ## Training
 
 ### Supervised Fine-Tuning (SFT)
-We use [Unsloth](https://unsloth.ai/) as the main framework for SFT. Here is an example command to run the 16-epoch SFT pipeline on graph branching task with `Qwen-2.5-0.5B` LLM backbone.
+We use [Unsloth](https://unsloth.ai/) as the main framework for SFT runs. Here is an example command to run the 16-epoch SFT pipeline on graph branching task with `Qwen-2.5-0.5B` LLM backbone.
 
 ```Bash
 
