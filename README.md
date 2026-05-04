@@ -64,7 +64,7 @@ uv pip install -r requirements.txt
 
 
 ## Datasets
-Below are the scripts used for data generation in each task: 
+Below are the scripts used for generation of data used in each task: 
 
 #### Graph Branching
 Generate the 6,400 SFT training samples, 1600 RLVR training samples, and 1,000 test samples in the Alpaca instruction format.
