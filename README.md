@@ -73,20 +73,20 @@ Generate the 6,400 SFT training samples, 1600 RLVR training samples, and 1,000 t
 python src/data_generation/gen_arithchain.py
 ```
 
-### Mathematical Reasoning Modes
+#### Mathematical Reasoning Modes
 The subsets of `OpenMathInstruct-1` and `OpenMathInstruct-2` datasets used in our experiments to evaluate Data-level vs. Problem-level diversity for NL/Code reasoning modes are provided at huggingface: [`nnheui/reasoning_modes`](https://huggingface.co/datasets/nnheui/reasoning_modes).
 
 
-### CounterFactual Arithmetic
+#### CounterFactual Arithmetic
 The base-7, 9, 11, and 12 counterfactual arithmetic datasets are used to test under-thinking reasoning behavior. This dataset is provided at: `src/data_generation/counterfact_arithmetic.ipynb`.
 
-### Simple knowledge questions - CapitalQA
+#### Simple knowledge questions - CapitalQA
 The `CapitalQA` dataset is used to evaluate over-thinking reasoning behaviors on simple factual queries. This dataset is provided at: `datasets/capitalQA.json`.
 
 
 ## Training
 
-### Supervised Fine-Tuning (SFT)
+### SFT
 We use [Unsloth](https://unsloth.ai/) as the main framework for SFT runs. Here is an example command to run the 16-epoch SFT pipeline on graph branching task with `Qwen-2.5-0.5B` LLM backbone.
 
 ```Bash
