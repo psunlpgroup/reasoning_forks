@@ -1,12 +1,13 @@
 # Why Do Reasoning Models Lose Coverage? The Role of Data and Forks in the Road
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Paper](https://img.shields.io/badge/arXiv-2404.18400-b31b1b.svg)](x)
+[![Paper](https://img.shields.io/badge/arXiv-2605.17026-b31b1b.svg)](https://arxiv.org/abs/2605.17026)
 [![Data](https://img.shields.io/github/directory-file-count/NNHieu/reasoning_forks/datasets?label=Data%20Files&style=flat-square)](./datasets/)
+[![Hugging Face Dataset](https://img.shields.io/badge/🤗%20Dataset-Hugging%20Face-yellow)](https://huggingface.co/datasets/nnheui/reasoning_modes)
 ![GitHub Repo stars](https://img.shields.io/github/stars/NNHieu/reasoning_forks?style=social)
 
 
-Official Implementation of paper [**Why Do Reasoning Models Lose Coverage? The Role of Data and Forks in the Road**](x).
+Official Implementation of paper [**Why Do Reasoning Models Lose Coverage? The Role of Data and Forks in the Road**](https://arxiv.org/abs/2605.17026).
 This repository includes all code for data generation, training pipelines, and evaluation.
 
 <!-- ## 📌 Table of Contents
@@ -260,7 +261,14 @@ sampler:
 ## Citation
 If you find this repo or our findings useful in your research, please cite us with:
 <pre>
-@article{
+@article{hieu2026reasoningforks,
+  title={Why Do Reasoning Models Lose Coverage? The Role of Data and Forks in the Road}, 
+  author={Ngoc-Hieu Nguyen and Parshin Shojaee and Phuc Minh Nguyen and Nan Zhang and Chandan K Reddy and Khoa D Doan and Rui Zhang},
+  year={2026},
+  eprint={2605.17026},
+  archivePrefix={arXiv},
+  primaryClass={cs.LG},
+  url={https://arxiv.org/abs/2605.17026}, 
 }
 </pre>
 
